@@ -40,6 +40,8 @@ public class ListFragment extends Fragment {
 
         List<Location> locations = LocationsHolder.get(getActivity()).getLocations();
         mAdapter = new LocationAdapter(locations);
+
+
         mLocationRecyclerView.setAdapter(mAdapter);
 
         return view;
@@ -68,7 +70,6 @@ public class ListFragment extends Fragment {
     }
 
     // Holder
-
     private class LocationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mNameTextView;
         private Location mLocation;
@@ -92,7 +93,6 @@ public class ListFragment extends Fragment {
     }
 
     // Adapter
-
     private class LocationAdapter extends RecyclerView.Adapter<LocationHolder> {
         private List<Location> mLocations;
 

@@ -1,6 +1,9 @@
 package ch.supsi.dti.isin.meteoapp.fragments;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,18 +21,32 @@ import java.util.List;
 
 import ch.supsi.dti.isin.meteoapp.R;
 import ch.supsi.dti.isin.meteoapp.activities.DetailActivity;
+import ch.supsi.dti.isin.meteoapp.db.DbHelper;
+import ch.supsi.dti.isin.meteoapp.db.DbSchema;
 import ch.supsi.dti.isin.meteoapp.model.LocationsHolder;
 import ch.supsi.dti.isin.meteoapp.model.Location;
 
 public class ListFragment extends Fragment {
     private RecyclerView mLocationRecyclerView;
     private LocationAdapter mAdapter;
+    private SQLiteDatabase mDatabase;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Context context = getActivity();
+        mDatabase = new DbHelper(context).getWritableDatabase();
         setHasOptionsMenu(true);
     }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mDatabase.close();
+    }
+
+    //insert method
 
 
     @Override
@@ -38,11 +55,21 @@ public class ListFragment extends Fragment {
         mLocationRecyclerView = view.findViewById(R.id.recycler_view);
         mLocationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        List<Location> locations = LocationsHolder.get(getActivity()).getLocations();
+        //leggere da database passando il db come argomento al metodo get() di locationHolder
+        List<Location> locations = LocationsHolder.get(getActivity(),mDatabase).getLocations();
         mAdapter = new LocationAdapter(locations);
         mLocationRecyclerView.setAdapter(mAdapter);
 
+        insertData();
+
         return view;
+    }
+
+    private void insertData() {
+        Location entry = new Location();
+        entry.setName("prova");
+        ContentValues values = Location.getContentValues(entry);
+        mDatabase.insert(DbSchema.DbTable.NAME, null, values);
     }
 
     // Menu

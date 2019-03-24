@@ -1,10 +1,19 @@
 package ch.supsi.dti.isin.meteoapp.model;
 
+import android.content.ContentValues;
+
 import java.util.UUID;
+
+import ch.supsi.dti.isin.meteoapp.db.DbSchema;
 
 public class Location {
     private UUID Id;
     private String mName;
+
+    public Location(UUID id, String mName) {
+        Id = id;
+        this.mName = mName;
+    }
 
     public UUID getId() {
         return Id;
@@ -24,5 +33,12 @@ public class Location {
 
     public Location() {
         Id = UUID.randomUUID();
+    }
+
+    public static ContentValues getContentValues(Location location) {
+        ContentValues values = new ContentValues();
+        values.put(DbSchema.DbTable.Cols.UUID, location.getId().toString());
+        values.put(DbSchema.DbTable.Cols.NAME, location.getName());
+        return values;
     }
 }

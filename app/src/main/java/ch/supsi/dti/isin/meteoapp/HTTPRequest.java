@@ -17,21 +17,13 @@ import ch.supsi.dti.isin.meteoapp.model.Location;
 import ch.supsi.dti.isin.meteoapp.model.Weather;
 
 
-public class HTTPRequest extends AsyncTask<Void, Void, Location> {
+public class HTTPRequest extends AsyncTask<Location, Void, String> {
 
     public static final String TAG = "Test";
     private static final String API_KEY = "4808e5b3883c21c5462931bdece6fd6e";
 
-    private OnTaskCompleted listener;
-    private String locationName;
 
-    public HTTPRequest(OnTaskCompleted listener,String locationName) {
-        this.listener = listener;
-        this.locationName = locationName;
-    }
-
-
-    public byte[] getUrlBytes(String urlSpec) throws IOException {
+    private byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -57,47 +49,45 @@ public class HTTPRequest extends AsyncTask<Void, Void, Location> {
         }
     }
 
-    public String getUrlString(String urlSpec) throws IOException {
+    private String getUrlString(String urlSpec) throws IOException {
         return new String(getUrlBytes(urlSpec));
     }
 
-    public Location getInfo() {
-        return doInBackground();
+
+    private Weather parseItems(JSONObject jsonBody) throws  JSONException {
+
+        JSONObject list = jsonBody.getJSONArray("list").getJSONObject(0);
+        JSONObject main = list.getJSONObject("main");
+        Double temp = main.getDouble("temp");
+        Double temp_min = main.getDouble("temp_min");
+        Double temp_max = main.getDouble("temp_max");
+        String descr = list.getJSONArray("weather").getJSONObject(0).getString("main");
+        System.out.println("info: " + temp + "," + temp_max +"," + temp_min +"," + descr);
+        return new Weather(descr,temp,temp_max,temp_min);
 
     }
-
-    private void parseItems(Location locationRequested, JSONObject jsonBody) throws IOException, JSONException {
-        JSONArray weather = jsonBody.getJSONArray("weather");
-        String main = weather.get(1).toString();
-        Double temperature = Double.parseDouble(jsonBody.getJSONObject("temp").toString());
-        Double maxTemperature = Double.parseDouble(jsonBody.getJSONObject("temp_min").toString());
-        Double minTemperature = Double.parseDouble(jsonBody.getJSONObject("temp_max").toString());
-        locationRequested.setWeather(new Weather(main,temperature,maxTemperature,minTemperature));
-    }
-
 
 
     @Override
-    protected Location doInBackground(Void... voids) {
-        Location locationRequested = new Location();
+    protected String doInBackground(Location... locations) {
         try {
             String url = Uri.parse("https://api.openweathermap.org/data/2.5/find")
                     .buildUpon()
-                    .appendQueryParameter("q", locationName)
+                    .appendQueryParameter("q", locations[0].getmName())
                     .appendQueryParameter("units", "metric")
                     .appendQueryParameter("appid", API_KEY)
                     .build().toString();
-            System.out.println(url);
             String jsonString = getUrlString(url);
-            System.out.println(jsonString);
             Log.i(TAG, "Received JSON: " + jsonString);
             JSONObject jsonBody = new JSONObject(jsonString);
-            parseItems(locationRequested, jsonBody);
+            locations[0].setWeather(parseItems(jsonBody));
+            System.out.println("LOCATION NOW: " + locations[0]);
         } catch (IOException ioe) {
             Log.e(TAG, "Failed to fetch items", ioe);
         } catch (JSONException je) {
             Log.e(TAG, "Failed to parse JSON", je);
         }
-        return locationRequested;
+        return "OK";
     }
+
 }

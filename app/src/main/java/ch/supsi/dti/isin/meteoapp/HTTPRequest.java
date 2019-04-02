@@ -61,9 +61,10 @@ public class HTTPRequest extends AsyncTask<Location, Void, String> {
         Double temp = main.getDouble("temp");
         Double temp_min = main.getDouble("temp_min");
         Double temp_max = main.getDouble("temp_max");
-        String descr = list.getJSONArray("weather").getJSONObject(0).getString("main");
-        System.out.println("info: " + temp + "," + temp_max +"," + temp_min +"," + descr);
-        return new Weather(descr,temp,temp_max,temp_min);
+        String name = list.getJSONArray("weather").getJSONObject(0).getString("main");
+        String description = list.getJSONArray("weather").getJSONObject(0).getString("description");
+        //System.out.println("info: " + temp + "," + temp_max +"," + temp_min +"," + descr);
+        return new Weather(name,description,temp,temp_max,temp_min);
 
     }
 

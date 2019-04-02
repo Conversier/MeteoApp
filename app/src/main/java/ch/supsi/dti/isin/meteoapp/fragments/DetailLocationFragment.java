@@ -1,11 +1,12 @@
 package ch.supsi.dti.isin.meteoapp.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.UUID;
@@ -41,11 +42,18 @@ public class DetailLocationFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_detail_location, container, false);
+        ImageView imageView  = v.findViewById(R.id.image_view);
 
+        LinearLayout cityLayout = v.findViewById(R.id.cityContainer);
+        cityLayout.setAlpha(0.8F);
 
+        LinearLayout descriptioLayout = v.findViewById(R.id.weatherDescriptionContainer);
+        descriptioLayout.setAlpha(0.8F);
 
+        LinearLayout temeratureLayout = v.findViewById(R.id.temperatureContainer);
+        temeratureLayout.setAlpha(0.4F);
 
-        mLocation.setmName("Rome,it");
+        mLocation.setmName("Roma,it");
         HTTPRequest t = new HTTPRequest();
         try {
             t.execute(mLocation).get();
@@ -62,27 +70,42 @@ public class DetailLocationFragment extends Fragment{
         mIdTextView.setText(mLocation.getWeather().getMinTemperature()+"");
         mIdTextView = v.findViewById(R.id.temp_max);
         mIdTextView.setText(mLocation.getWeather().getMaxTemperature()+"");
+        mIdTextView = v.findViewById(R.id.weatherDescription);
+        mIdTextView.setText(mLocation.getWeather().getDescription());
 
-        switch (mLocation.getWeather().getDescrition().toLowerCase()){
-            case "rain":
-                v.setBackground(getActivity().getResources().getDrawable(R.drawable.rain));
-                break;
-            case "sunny":
-                v.setBackground(getActivity().getResources().getDrawable(R.drawable.sunny));
-                break;
-            case "snow":
-                v.setBackground(getActivity().getResources().getDrawable(R.drawable.snow));
-                break;
-            case "clouds":
-                v.setBackground(getActivity().getResources().getDrawable(R.drawable.clouds));
-                break;
-            case "thunderstorm":
-                v.setBackground(getActivity().getResources().getDrawable(R.drawable.thunderstorm));
-                break;
-        }
+
+        setBackgroundWeather(v,imageView);
 
 
         return v;
+    }
+
+    private void setBackgroundWeather(View v,ImageView imageView) {
+        switch (mLocation.getWeather().getName().toLowerCase()) {
+            case "rain":
+                v.setBackground(getActivity().getResources().getDrawable(R.drawable.rain));
+                imageView.setImageResource(R.drawable.iconrain);
+                break;
+            case "clear":
+                v.setBackground(getActivity().getResources().getDrawable(R.drawable.clear));
+                imageView.setImageResource(R.drawable.iconclear);
+
+                break;
+            case "snow":
+                v.setBackground(getActivity().getResources().getDrawable(R.drawable.snow));
+                imageView.setImageResource(R.drawable.iconsnow);
+                break;
+            case "clouds":
+                v.setBackground(getActivity().getResources().getDrawable(R.drawable.clouds));
+                imageView.setImageResource(R.drawable.iconclouds);
+
+                break;
+            case "thunderstorm":
+                v.setBackground(getActivity().getResources().getDrawable(R.drawable.thunderstorm));
+                imageView.setImageResource(R.drawable.iconthunderstorm);
+
+                break;
+        }
     }
 }
 

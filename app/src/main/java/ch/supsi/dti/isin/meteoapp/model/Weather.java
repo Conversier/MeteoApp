@@ -2,10 +2,20 @@ package ch.supsi.dti.isin.meteoapp.model;
 
 public class Weather {
 
-    private String descrition;
+    private String name;
 
-    public void setDescrition(String descrition) {
-        this.descrition = descrition;
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    private String description;
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setTemperature(Double temperature) {
@@ -24,15 +34,23 @@ public class Weather {
     private Double maxTemperature;
     private Double minTemperature;
 
-    public Weather(String descrition, Double temperature, Double maxTemperature, Double minTemperature) {
-        this.descrition = descrition;
+    public Weather(String name, Double temperature, Double maxTemperature, Double minTemperature) {
+        this.name = name;
         this.temperature = temperature;
         this.maxTemperature = maxTemperature;
         this.minTemperature = minTemperature;
     }
 
-    public String getDescrition() {
-        return descrition;
+    public Weather(String name,String description, Double temperature, Double maxTemperature, Double minTemperature) {
+        this.name = name;
+        this.description = description;
+        this.temperature = temperature;
+        this.maxTemperature = maxTemperature;
+        this.minTemperature = minTemperature;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Double getTemperature() {
@@ -50,7 +68,7 @@ public class Weather {
     @Override
     public String toString() {
         return "Weather{" +
-                "descrition='" + descrition + '\'' +
+                "name='" + name + '\'' +
                 ", temperature=" + temperature +
                 ", maxTemperature=" + maxTemperature +
                 ", minTemperature=" + minTemperature +

@@ -37,18 +37,17 @@ import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 
 public class ListFragment extends Fragment {
-    private static final int REQ_CODE = 0;
+    private static final int REQ_CODE =0; //I use this variable to manage the asking of gps permission ?????????????????
     private RecyclerView mLocationRecyclerView;
     private LocationAdapter mAdapter;
 
+    //This function allows me to manage the input inserted in the dialog, to add a new location
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode!= Activity.RESULT_OK)
             return;
         if(requestCode==0){
             String valore=(String)data.getSerializableExtra("tag");
-            System.out.println("Valore ricevuto : "+valore);
-
             addLocation(valore, 1);
         }
     }
@@ -71,6 +70,7 @@ public class ListFragment extends Fragment {
         mLocationRecyclerView.setAdapter(mAdapter);
     }
 
+    //Method to manage the answer of the request of permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode){
@@ -83,6 +83,7 @@ public class ListFragment extends Fragment {
         }
     }
 
+    //This method manage the GPS by giving our position
     private void startLocationListener(){
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

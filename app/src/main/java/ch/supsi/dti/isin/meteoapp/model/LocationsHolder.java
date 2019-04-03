@@ -20,11 +20,9 @@ public class LocationsHolder {
 
     private LocationsHolder(Context context) {
         mLocations = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Location location = new Location();
-            location.setName("Location # " + i);
-            mLocations.add(location);
-        }
+        mLocations.add(new Location());
+        mLocations.get(0).setName("GPS LOCATION");
+
     }
 
     public List<Location> getLocations() {

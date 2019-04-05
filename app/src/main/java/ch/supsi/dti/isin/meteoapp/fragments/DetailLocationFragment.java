@@ -43,17 +43,7 @@ public class DetailLocationFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_detail_location, container, false);
         ImageView imageView  = v.findViewById(R.id.image_view);
-
-        LinearLayout cityLayout = v.findViewById(R.id.cityContainer);
-        cityLayout.setAlpha(0.8F);
-
-        LinearLayout descriptioLayout = v.findViewById(R.id.weatherDescriptionContainer);
-        descriptioLayout.setAlpha(0.8F);
-
-        LinearLayout temeratureLayout = v.findViewById(R.id.temperatureContainer);
-        temeratureLayout.setAlpha(0.4F);
-
-        mLocation.setmName("Roma,it");
+        mLocation.setmName("Manno,ch");
         HTTPRequest t = new HTTPRequest();
         try {
             t.execute(mLocation).get();
@@ -62,6 +52,12 @@ public class DetailLocationFragment extends Fragment{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        serWeatherInformations(v);
+        setBackgroundWeather(v,imageView);
+        return v;
+    }
+
+    private void serWeatherInformations(View v) {
         mIdTextView = v.findViewById(R.id.city_name);
         mIdTextView.setText(mLocation.getmName());
         mIdTextView = v.findViewById(R.id.temp);
@@ -72,12 +68,6 @@ public class DetailLocationFragment extends Fragment{
         mIdTextView.setText(mLocation.getWeather().getMaxTemperature()+"");
         mIdTextView = v.findViewById(R.id.weatherDescription);
         mIdTextView.setText(mLocation.getWeather().getDescription());
-
-
-        setBackgroundWeather(v,imageView);
-
-
-        return v;
     }
 
     private void setBackgroundWeather(View v,ImageView imageView) {
@@ -89,7 +79,6 @@ public class DetailLocationFragment extends Fragment{
             case "clear":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.clear));
                 imageView.setImageResource(R.drawable.iconclear);
-
                 break;
             case "snow":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.snow));
@@ -103,8 +92,10 @@ public class DetailLocationFragment extends Fragment{
             case "thunderstorm":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.thunderstorm));
                 imageView.setImageResource(R.drawable.iconthunderstorm);
-
                 break;
+            case "fog":
+                v.setBackground(getActivity().getResources().getDrawable(R.drawable.fog));
+                imageView.setImageResource(R.drawable.iconclouds);
         }
     }
 }

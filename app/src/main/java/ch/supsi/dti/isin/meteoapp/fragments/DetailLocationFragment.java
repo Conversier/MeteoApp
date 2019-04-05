@@ -44,7 +44,7 @@ public class DetailLocationFragment extends Fragment{
         ImageView imageView  = v.findViewById(R.id.image_view);
 
 
-        mLocation.setmName("Manno,ch");
+        mLocation.setName("London,uk");
         HTTPRequest t = new HTTPRequest();
         try {
             t.execute(mLocation).get();
@@ -61,7 +61,7 @@ public class DetailLocationFragment extends Fragment{
 
     private void serWeatherInformations(View v) {
         mIdTextView = v.findViewById(R.id.city_name);
-        mIdTextView.setText(mLocation.getmName());
+        mIdTextView.setText(mLocation.getName());
         mIdTextView = v.findViewById(R.id.temp);
         mIdTextView.setText(mLocation.getWeather().getTemperature()+"");
         mIdTextView = v.findViewById(R.id.temp_min);
@@ -74,11 +74,11 @@ public class DetailLocationFragment extends Fragment{
 
     private void setBackgroundWeather(View v,ImageView imageView) {
         switch (mLocation.getWeather().getName().toLowerCase()) {
-            case "rain":
+            case "rain": case "drizzle":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.rain));
                 imageView.setImageResource(R.drawable.iconrain);
                 break;
-            case "clear":
+            case "clear": case "mist":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.clear));
                 imageView.setImageResource(R.drawable.iconclear);
                 break;
@@ -91,11 +91,11 @@ public class DetailLocationFragment extends Fragment{
                 imageView.setImageResource(R.drawable.iconclouds);
 
                 break;
-            case "thunderstorm":
+            case "thunderstorm": case "tornado": case "sand": case "ash": case "squall":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.thunderstorm));
                 imageView.setImageResource(R.drawable.iconthunderstorm);
                 break;
-            case "fog":
+            case "fog": case "haze": case "dust":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.fog));
                 imageView.setImageResource(R.drawable.iconclouds);
         }

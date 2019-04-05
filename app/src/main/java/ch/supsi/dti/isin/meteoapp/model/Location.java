@@ -59,4 +59,5 @@ public class Location {
                 ", weather=" + weather +
                 '}';
     }
+
 }

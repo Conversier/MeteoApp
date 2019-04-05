@@ -1,11 +1,12 @@
 package ch.supsi.dti.isin.meteoapp.fragments;
-
-import ch.supsi.dti.isin.meteoapp.R;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,13 +29,16 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
-
+import ch.supsi.dti.isin.meteoapp.R;
 import ch.supsi.dti.isin.meteoapp.activities.DetailActivity;
+import ch.supsi.dti.isin.meteoapp.db.DbHelper;
+import ch.supsi.dti.isin.meteoapp.db.DbSchema;
 import ch.supsi.dti.isin.meteoapp.model.LocationsHolder;
 import ch.supsi.dti.isin.meteoapp.model.Location;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
@@ -44,11 +50,14 @@ public class ListFragment extends Fragment {
     private static final int REQ_CODE =0; //I use this variable to manage the asking of gps permission ?????????????????
     private RecyclerView mLocationRecyclerView;
     private LocationAdapter mAdapter;
+    private SQLiteDatabase mDatabase;
 
     //Method called by the constructor of MainActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Context context = getActivity();
+        mDatabase = new DbHelper(context).getWritableDatabase();
         setHasOptionsMenu(true);
     }
 
@@ -118,30 +127,48 @@ public class ListFragment extends Fragment {
 
     //This method is called after onCreate(), it allows us to do any graphical initialisations
     //It should return a view that is the main UI of the view
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mDatabase.close();
+    }
+
+    //insert method
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //startLocationListener();
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-
         mLocationRecyclerView = view.findViewById(R.id.recycler_view);
         mLocationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
                 getContext(),
                 LinearLayoutManager.VERTICAL
         );
+        //leggere da database passando il db come argomento al metodo get() di locationHolder
+        List<Location> locations = LocationsHolder.get(getActivity(),mDatabase).getLocations();
         mLocationRecyclerView.addItemDecoration(dividerItemDecoration);
-        List<Location> locations = LocationsHolder.get(getActivity()).getLocations();
         mAdapter = new LocationAdapter(locations);
         mLocationRecyclerView.setAdapter(mAdapter);
 
+        insertData();
+
         return view;
+    }
+
+    private void insertData() {
+        Location entry = new Location();
+        entry.setName("prova");
+        ContentValues values = Location.getContentValues(entry);
+        mDatabase.insert(DbSchema.DbTable.NAME, null, values);
     }
 
     // Menu
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_list, menu);
     }
@@ -176,8 +203,6 @@ public class ListFragment extends Fragment {
             mImageView=itemView.findViewById(R.id.item_image);
         }
 
-
-
         @Override
         public void onClick(View view) {
             mImageView.setBackgroundResource(R.drawable.common_google_signin_btn_icon_dark);
@@ -189,7 +214,6 @@ public class ListFragment extends Fragment {
             // Set up the buttons
             Intent intent = DetailActivity.newIntent(getActivity(), mLocation.getId());
             startActivity(intent);
-
         }
 
         public void bind(Location location) {
@@ -203,7 +227,6 @@ public class ListFragment extends Fragment {
     private class LocationAdapter extends RecyclerView.Adapter<LocationHolder> {
         private List<Location> mLocations;
 
-
         public LocationAdapter(List<Location> locations) {
             mLocations = locations;
         }
@@ -211,13 +234,12 @@ public class ListFragment extends Fragment {
         @Override
         public LocationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            return new LocationHolder(layoutInflater,parent );
+            return new LocationHolder(layoutInflater, parent);
         }
 
         @Override
         public void onBindViewHolder(LocationHolder holder, int position) {
             Location location = mLocations.get(position);
-
             holder.bind(location);
         }
 

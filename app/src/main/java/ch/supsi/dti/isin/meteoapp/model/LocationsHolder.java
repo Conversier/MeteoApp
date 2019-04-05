@@ -1,16 +1,28 @@
 package ch.supsi.dti.isin.meteoapp.model;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import ch.supsi.dti.isin.meteoapp.db.CursorWrapper;
+import ch.supsi.dti.isin.meteoapp.db.DbSchema;
+
 public class LocationsHolder {
 
     private static LocationsHolder sLocationsHolder;
     private List<Location> mLocations;
+
+    public static LocationsHolder get(Context context, SQLiteDatabase db) {
+        if (sLocationsHolder == null)
+            sLocationsHolder = new LocationsHolder(context,db);
+
+        return sLocationsHolder;
+    }
 
     public static LocationsHolder get(Context context) {
         if (sLocationsHolder == null)
@@ -19,18 +31,35 @@ public class LocationsHolder {
         return sLocationsHolder;
     }
 
-    private LocationsHolder(Context context) {
-        ArrayList<String> list= new ArrayList<>();
-        String[] locales= Locale.getISOCountries();
+    private LocationsHolder(Context context){
         mLocations = new ArrayList<>();
-        mLocations.add(createLocation("La mia posizione"));
+    }
+    private LocationsHolder(Context context, SQLiteDatabase database) {
+        mLocations = new ArrayList<>();
 
+        //LETTURA DA DB PER CARICARE LA LISTA DI LOCATIONS
+        CursorWrapper cursorWrapper = queryData(null, null, database);
+
+        try {
+            cursorWrapper.moveToFirst();
+            while (!cursorWrapper.isAfterLast()) {
+                Location entry = cursorWrapper.getLocation();
+                //res += "\n" + entry.getName();
+                mLocations.add(entry);
+                cursorWrapper.moveToNext();
+            }
+        } finally {
+            cursorWrapper.close();
+        }
+
+
+        /*for (int i = 0; i < 10; i++) {
+            Location location = new Location();
+            location.setName("Location # " + i);
+            mLocations.add(location);
+        }*/
     }
-    public Location createLocation(String name){
-        Location c=new Location();
-        c.setName(name);
-        return  c;
-    }
+
     public List<Location> getLocations() {
         return mLocations;
     }
@@ -42,5 +71,19 @@ public class LocationsHolder {
         }
 
         return null;
+    }
+
+    private CursorWrapper queryData(String whereClause, String[] whereArgs,SQLiteDatabase db){
+        Cursor cursor = db.query(
+                DbSchema.DbTable.NAME,
+                null,   //columns - null selects all columns
+                whereClause,
+                whereArgs,
+                null,   //groupBy
+                null,   //having
+                null    //orderBy
+        );
+
+        return new CursorWrapper(cursor);
     }
 }

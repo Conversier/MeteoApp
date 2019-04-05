@@ -1,17 +1,15 @@
 package ch.supsi.dti.isin.meteoapp.fragments;
 
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-
 import ch.supsi.dti.isin.meteoapp.HTTPRequest;
 import ch.supsi.dti.isin.meteoapp.R;
 import ch.supsi.dti.isin.meteoapp.model.LocationsHolder;
@@ -22,6 +20,7 @@ public class DetailLocationFragment extends Fragment{
 
     private Location mLocation;
     private TextView mIdTextView;
+
 
     public static DetailLocationFragment newInstance(UUID locationId) {
         Bundle args = new Bundle();
@@ -43,6 +42,8 @@ public class DetailLocationFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_detail_location, container, false);
         ImageView imageView  = v.findViewById(R.id.image_view);
+
+
         mLocation.setmName("Manno,ch");
         HTTPRequest t = new HTTPRequest();
         try {
@@ -56,6 +57,7 @@ public class DetailLocationFragment extends Fragment{
         setBackgroundWeather(v,imageView);
         return v;
     }
+
 
     private void serWeatherInformations(View v) {
         mIdTextView = v.findViewById(R.id.city_name);

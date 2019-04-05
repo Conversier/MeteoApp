@@ -58,6 +58,8 @@ public class ListFragment extends Fragment {
         //leggere da database passando il db come argomento al metodo get() di locationHolder
         List<Location> locations = LocationsHolder.get(getActivity(),mDatabase).getLocations();
         mAdapter = new LocationAdapter(locations);
+
+
         mLocationRecyclerView.setAdapter(mAdapter);
 
         insertData();
@@ -95,7 +97,6 @@ public class ListFragment extends Fragment {
     }
 
     // Holder
-
     private class LocationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mNameTextView;
         private Location mLocation;
@@ -119,7 +120,6 @@ public class ListFragment extends Fragment {
     }
 
     // Adapter
-
     private class LocationAdapter extends RecyclerView.Adapter<LocationHolder> {
         private List<Location> mLocations;
 

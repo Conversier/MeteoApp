@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 public class LocationsHolder {
@@ -19,12 +20,17 @@ public class LocationsHolder {
     }
 
     private LocationsHolder(Context context) {
+        ArrayList<String> list= new ArrayList<>();
+        String[] locales= Locale.getISOCountries();
         mLocations = new ArrayList<>();
-        mLocations.add(new Location());
-        mLocations.get(0).setName("GPS LOCATION");
+        mLocations.add(createLocation("La mia posizione"));
 
     }
-
+    public Location createLocation(String name){
+        Location c=new Location();
+        c.setName(name);
+        return  c;
+    }
     public List<Location> getLocations() {
         return mLocations;
     }

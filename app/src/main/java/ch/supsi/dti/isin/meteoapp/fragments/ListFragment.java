@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -22,8 +23,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -41,6 +45,13 @@ public class ListFragment extends Fragment {
     private RecyclerView mLocationRecyclerView;
     private LocationAdapter mAdapter;
 
+    //Method called by the constructor of MainActivity
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     //This function allows me to manage the input inserted in the dialog, to add a new location
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -50,6 +61,7 @@ public class ListFragment extends Fragment {
             String valore=(String)data.getSerializableExtra("tag");
             addLocation(valore, 1);
         }
+
     }
 
     //Method to add a Location to the initial list
@@ -64,7 +76,6 @@ public class ListFragment extends Fragment {
         else{
             LocationsHolder.get(getActivity()).getLocations().add(location);
         }
-
 
         mAdapter=new LocationAdapter(LocationsHolder.get(getActivity()).getLocations());
         mLocationRecyclerView.setAdapter(mAdapter);
@@ -103,20 +114,22 @@ public class ListFragment extends Fragment {
                     }
                 });
     }
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
 
 
+    //This method is called after onCreate(), it allows us to do any graphical initialisations
+    //It should return a view that is the main UI of the view
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        startLocationListener();
+        //startLocationListener();
         View view = inflater.inflate(R.layout.fragment_list, container, false);
+
         mLocationRecyclerView = view.findViewById(R.id.recycler_view);
         mLocationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+                getContext(),
+                LinearLayoutManager.VERTICAL
+        );
+        mLocationRecyclerView.addItemDecoration(dividerItemDecoration);
         List<Location> locations = LocationsHolder.get(getActivity()).getLocations();
         mAdapter = new LocationAdapter(locations);
         mLocationRecyclerView.setAdapter(mAdapter);
@@ -136,7 +149,6 @@ public class ListFragment extends Fragment {
     //This is called when i click on the plus button on the top in the main view
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         FragmentManager fm=getFragmentManager();
         InsertLocationFragment il=new InsertLocationFragment();
         il.setTargetFragment(this,0);
@@ -155,28 +167,29 @@ public class ListFragment extends Fragment {
     private class LocationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mNameTextView;
         private Location mLocation;
+        private ImageView mImageView;
 
         public LocationHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item, parent, false));
             itemView.setOnClickListener(this);
             mNameTextView = itemView.findViewById(R.id.name);
+            mImageView=itemView.findViewById(R.id.item_image);
         }
 
 
 
         @Override
         public void onClick(View view) {
+            mImageView.setBackgroundResource(R.drawable.common_google_signin_btn_icon_dark);
             AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-            builder.setTitle("Type city name");
             final EditText input=new EditText(getActivity());
             input.setInputType(InputType.TYPE_CLASS_TEXT);
             builder.setView(input);
 
             // Set up the buttons
-
-
             Intent intent = DetailActivity.newIntent(getActivity(), mLocation.getId());
             startActivity(intent);
+
         }
 
         public void bind(Location location) {
@@ -190,6 +203,7 @@ public class ListFragment extends Fragment {
     private class LocationAdapter extends RecyclerView.Adapter<LocationHolder> {
         private List<Location> mLocations;
 
+
         public LocationAdapter(List<Location> locations) {
             mLocations = locations;
         }
@@ -197,12 +211,13 @@ public class ListFragment extends Fragment {
         @Override
         public LocationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            return new LocationHolder(layoutInflater, parent);
+            return new LocationHolder(layoutInflater,parent );
         }
 
         @Override
         public void onBindViewHolder(LocationHolder holder, int position) {
             Location location = mLocations.get(position);
+
             holder.bind(location);
         }
 

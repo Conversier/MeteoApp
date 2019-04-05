@@ -30,6 +30,7 @@ public class Location {
         Id = UUID.randomUUID();
     }
 
+    //Doesn't work because the key license is expired
     public static String autoCompleteName(String cityname) throws JSONException {
         RestClient rc=new RestClient();
         JSONObject obj=null;

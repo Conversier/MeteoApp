@@ -20,7 +20,6 @@ public class LocationsHolder {
     public static LocationsHolder get(Context context, SQLiteDatabase db) {
         if (sLocationsHolder == null)
             sLocationsHolder = new LocationsHolder(context,db);
-
         return sLocationsHolder;
     }
 

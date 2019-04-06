@@ -59,8 +59,25 @@ public class ListFragment extends Fragment {
         Context context = getActivity();
         mDatabase = new DbHelper(context).getWritableDatabase();
         setHasOptionsMenu(true);
-    }
 
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //startLocationListener();
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
+        mLocationRecyclerView = view.findViewById(R.id.recycler_view);
+        mLocationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+                getContext(),
+                LinearLayoutManager.VERTICAL
+        );
+        //leggere da database passando il db come argomento al metodo get() di locationHolder
+        List<Location> locations = LocationsHolder.get(getActivity(),mDatabase).getLocations();
+        mLocationRecyclerView.addItemDecoration(dividerItemDecoration);
+        mAdapter = new LocationAdapter(locations);
+        mLocationRecyclerView.setAdapter(mAdapter);
+        return view;
+    }
     //This function allows me to manage the input inserted in the dialog, to add a new location
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -68,7 +85,8 @@ public class ListFragment extends Fragment {
             return;
         if(requestCode==0){
             String valore=(String)data.getSerializableExtra("tag");
-            addLocation(valore, 1);
+            System.out.println("Valore ricevuto: "+valore);
+            insertData(valore);
         }
 
     }
@@ -137,30 +155,11 @@ public class ListFragment extends Fragment {
     //insert method
 
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //startLocationListener();
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-        mLocationRecyclerView = view.findViewById(R.id.recycler_view);
-        mLocationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
-                getContext(),
-                LinearLayoutManager.VERTICAL
-        );
-        //leggere da database passando il db come argomento al metodo get() di locationHolder
-        List<Location> locations = LocationsHolder.get(getActivity(),mDatabase).getLocations();
-        mLocationRecyclerView.addItemDecoration(dividerItemDecoration);
-        mAdapter = new LocationAdapter(locations);
-        mLocationRecyclerView.setAdapter(mAdapter);
 
-        insertData();
 
-        return view;
-    }
-
-    private void insertData() {
+    private void insertData(String city_name) {
         Location entry = new Location();
-        entry.setName("prova");
+        entry.setName(city_name);
         ContentValues values = Location.getContentValues(entry);
         mDatabase.insert(DbSchema.DbTable.NAME, null, values);
     }

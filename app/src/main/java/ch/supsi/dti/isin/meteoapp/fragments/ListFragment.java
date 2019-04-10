@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Point;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,23 +17,16 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import java.util.List;
-
 import ch.supsi.dti.isin.meteoapp.R;
 import ch.supsi.dti.isin.meteoapp.activities.DetailActivity;
 import ch.supsi.dti.isin.meteoapp.db.DbHelper;
@@ -86,6 +78,7 @@ public class ListFragment extends Fragment {
         if(requestCode==0){
             String valore=(String)data.getSerializableExtra("tag");
             System.out.println("Valore ricevuto: "+valore);
+            addLocation(valore,123);
             insertData(valore);
         }
 
@@ -209,9 +202,11 @@ public class ListFragment extends Fragment {
             final EditText input=new EditText(getActivity());
             input.setInputType(InputType.TYPE_CLASS_TEXT);
             builder.setView(input);
+            //We have to do the HTTP request, put data into mLocation and pass to DetailedActivity
+            System.out.println("Clicked : "+mLocation.getName());
 
             // Set up the buttons
-            Intent intent = DetailActivity.newIntent(getActivity(), mLocation.getId());
+            Intent intent = DetailActivity.newIntent(getActivity(), mLocation);
             startActivity(intent);
         }
 

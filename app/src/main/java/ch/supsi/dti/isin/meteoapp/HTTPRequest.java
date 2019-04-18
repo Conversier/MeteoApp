@@ -74,7 +74,7 @@ public class HTTPRequest extends AsyncTask<Location, Void, String> {
         try {
             String url = Uri.parse("https://api.openweathermap.org/data/2.5/find")
                     .buildUpon()
-                    .appendQueryParameter("q", locations[0].getmName())
+                    .appendQueryParameter("q", locations[0].getName())
                     .appendQueryParameter("units", "metric")
                     .appendQueryParameter("appid", API_KEY)
                     .build().toString();

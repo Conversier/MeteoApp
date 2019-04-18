@@ -17,25 +17,30 @@ import ch.supsi.dti.isin.meteoapp.model.Location;
 
 public class DetailLocationFragment extends Fragment{
     private static final String ARG_LOCATION_ID = "location_id";
-
+    private static final String ARG_LOCATION_NAME = "location_name";
     private Location mLocation;
     private TextView mIdTextView;
 
 
-    public static DetailLocationFragment newInstance(UUID locationId) {
+    public static DetailLocationFragment newInstance(String location_name) {
         Bundle args = new Bundle();
-        args.putSerializable(ARG_LOCATION_ID, locationId);
-
+        args.putCharSequence(ARG_LOCATION_NAME,location_name);
+        //args.putSerializable(ARG_LOCATION_NAME, location_name);
         DetailLocationFragment fragment = new DetailLocationFragment();
         fragment.setArguments(args);
+       // fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UUID locationId = (UUID) getArguments().getSerializable(ARG_LOCATION_ID);
-        mLocation = LocationsHolder.get(getActivity()).getLocation(locationId);
+        //String locationName = getArguments().getSerializable(ARG_LOCATION_NAME).toString();
+        String locationName = getArguments().getCharSequence(ARG_LOCATION_NAME).toString();
+        System.out.println("BETA: "+locationName);
+        mLocation=new Location();
+        mLocation.setName(locationName);
+        //Location = LocationsHolder.get(getActivity()).getLocation(locationId);
     }
 
     @Override
@@ -44,7 +49,7 @@ public class DetailLocationFragment extends Fragment{
         ImageView imageView  = v.findViewById(R.id.image_view);
 
 
-        mLocation.setmName("Manno,ch");
+        //mLocation.setName("London,uk");
         HTTPRequest t = new HTTPRequest();
         try {
             t.execute(mLocation).get();
@@ -61,7 +66,7 @@ public class DetailLocationFragment extends Fragment{
 
     private void serWeatherInformations(View v) {
         mIdTextView = v.findViewById(R.id.city_name);
-        mIdTextView.setText(mLocation.getmName());
+        mIdTextView.setText(mLocation.getName());
         mIdTextView = v.findViewById(R.id.temp);
         mIdTextView.setText(mLocation.getWeather().getTemperature()+"");
         mIdTextView = v.findViewById(R.id.temp_min);
@@ -74,11 +79,11 @@ public class DetailLocationFragment extends Fragment{
 
     private void setBackgroundWeather(View v,ImageView imageView) {
         switch (mLocation.getWeather().getName().toLowerCase()) {
-            case "rain":
+            case "rain": case "drizzle":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.rain));
                 imageView.setImageResource(R.drawable.iconrain);
                 break;
-            case "clear":
+            case "clear": case "mist":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.clear));
                 imageView.setImageResource(R.drawable.iconclear);
                 break;
@@ -91,11 +96,11 @@ public class DetailLocationFragment extends Fragment{
                 imageView.setImageResource(R.drawable.iconclouds);
 
                 break;
-            case "thunderstorm":
+            case "thunderstorm": case "tornado": case "sand": case "ash": case "squall":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.thunderstorm));
                 imageView.setImageResource(R.drawable.iconthunderstorm);
                 break;
-            case "fog":
+            case "fog": case "haze": case "dust":
                 v.setBackground(getActivity().getResources().getDrawable(R.drawable.fog));
                 imageView.setImageResource(R.drawable.iconclouds);
         }

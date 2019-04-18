@@ -1,7 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_add"
-        android:icon="@android:drawable/ic_menu_add"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_edit"
         android:title="New"
-        app:showAsAction="ifRoom|withText"/>
+        android:visible="true"
+        app:showAsAction="ifRoom|withText" />
 </menu>

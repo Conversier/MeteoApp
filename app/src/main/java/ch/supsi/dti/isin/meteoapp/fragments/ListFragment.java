@@ -50,8 +50,8 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Context context = getActivity();
         mDatabase = new DbHelper(context).getWritableDatabase();
+        mDatabase = new DbHelper(context).getWritableDatabase();
         setHasOptionsMenu(true);
-
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -161,6 +161,7 @@ public class ListFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_list, menu);
     }
@@ -192,12 +193,12 @@ public class ListFragment extends Fragment {
             super(inflater.inflate(R.layout.list_item, parent, false));
             itemView.setOnClickListener(this);
             mNameTextView = itemView.findViewById(R.id.name);
-            mImageView=itemView.findViewById(R.id.item_image);
+            //mImageView=itemView.findViewById(R.id.item_image);
         }
 
         @Override
         public void onClick(View view) {
-            mImageView.setBackgroundResource(R.drawable.common_google_signin_btn_icon_dark);
+            //mImageView.setBackgroundResource(R.drawable.common_google_signin_btn_icon_dark);
             AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
             final EditText input=new EditText(getActivity());
             input.setInputType(InputType.TYPE_CLASS_TEXT);

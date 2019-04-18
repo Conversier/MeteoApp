@@ -5,5 +5,9 @@
     android:id="@+id/recycler_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/cielo"
-    tools:listitem="@android:layout/simple_list_item_activated_1" />
+    android:background="@drawable/background"
+    tools:listitem="@android:layout/simple_list_item_activated_1"
+
+
+    />
+

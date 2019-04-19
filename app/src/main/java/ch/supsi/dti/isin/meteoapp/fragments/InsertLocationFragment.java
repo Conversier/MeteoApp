@@ -12,9 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
+import java.util.concurrent.ExecutionException;
+
+import ch.supsi.dti.isin.meteoapp.HTTPRequest;
 import ch.supsi.dti.isin.meteoapp.R;
 import ch.supsi.dti.isin.meteoapp.model.Location;
 
@@ -23,11 +27,17 @@ public class InsertLocationFragment extends DialogFragment {
     Button b_addCity;
     EditText et_cityname;
 
-    private void sendResult(int resultCode, String name){
+    private void sendResult(int resultCode, Location mLocation){
+
+
+
+        //System.out.println("PALMAS");
         if(getTargetFragment()==null)
             return;
         Intent intent=new Intent();
-        intent.putExtra("tag",name);
+
+        intent.putExtra("Location",mLocation);
+
         getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,intent);
     }
 
@@ -44,9 +54,27 @@ public class InsertLocationFragment extends DialogFragment {
                     //String name= Location.autoCompleteName(et_cityname.getText().toString());
                     //System.out.println(et_cityname.getText().toString());
                     String name=et_cityname.getText().toString();
-                    sendResult(Activity.RESULT_OK,name);
-                    dismiss();
+                    Location mLocation=new Location();
+                    mLocation.setName(name);
 
+
+                        HTTPRequest t = new HTTPRequest();
+                        try {
+
+                            t.execute(mLocation).get();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    if(mLocation.getWeather()==null){
+                        Toast.makeText(getContext(),"Location not found",Toast.LENGTH_LONG).show();
+                    }else {
+                        sendResult(Activity.RESULT_OK, mLocation);
+                        dismiss();
+                    }
 
             }
         });

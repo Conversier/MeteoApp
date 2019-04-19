@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -26,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.List;
 import ch.supsi.dti.isin.meteoapp.R;
 import ch.supsi.dti.isin.meteoapp.activities.DetailActivity;
@@ -44,12 +47,25 @@ public class ListFragment extends Fragment {
     private LocationAdapter mAdapter;
     private SQLiteDatabase mDatabase;
 
+    public void clearDatabase(SQLiteDatabase db,String TABLE_NAME) {
+        String clearDBQuery = "DELETE FROM "+TABLE_NAME;
+        db.execSQL(clearDBQuery);
+    }
+
     //Method called by the constructor of MainActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Context context = getActivity();
         mDatabase = new DbHelper(context).getWritableDatabase();
+        Cursor c = mDatabase.rawQuery("SELECT * FROM "+ DbSchema.DbTable.NAME +" WHERE 0", null);
+        try {
+            String[] columnNames = c.getColumnNames();
+            System.out.println("OK");
+        } finally {
+            c.close();
+        }
+        //clearDatabase(mDatabase,"MeteoApp");
         setHasOptionsMenu(true);
 
     }
@@ -76,10 +92,11 @@ public class ListFragment extends Fragment {
         if(resultCode!= Activity.RESULT_OK)
             return;
         if(requestCode==0){
-            String valore=(String)data.getSerializableExtra("tag");
-            System.out.println("Valore ricevuto: "+valore);
-            addLocation(valore,123);
-            insertData(valore);
+            Location locationReceived=(Location)data.getSerializableExtra("Location");
+            //String valore=(String)data.getSerializableExtra("tag");
+            System.out.println("Valore ricevuto: "+locationReceived.getName());
+            addLocation(locationReceived,123);
+            insertData(locationReceived);
         }
 
     }
@@ -100,7 +117,19 @@ public class ListFragment extends Fragment {
         mAdapter=new LocationAdapter(LocationsHolder.get(getActivity()).getLocations());
         mLocationRecyclerView.setAdapter(mAdapter);
     }
+    private void addLocation(Location location,int i){
+        //If i is 0, the GPS location is updated
+        if(i==0){
+            LocationsHolder.get(getActivity()).getLocations().set(0,location);
+        }
+        //Add the city to the list
+        else{
+            LocationsHolder.get(getActivity()).getLocations().add(location);
+        }
 
+        mAdapter=new LocationAdapter(LocationsHolder.get(getActivity()).getLocations());
+        mLocationRecyclerView.setAdapter(mAdapter);
+    }
     //Method to manage the answer of the request of permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -156,6 +185,10 @@ public class ListFragment extends Fragment {
         ContentValues values = Location.getContentValues(entry);
         mDatabase.insert(DbSchema.DbTable.NAME, null, values);
     }
+    private void insertData(Location location) {
+        ContentValues values = Location.getContentValues(location);
+        mDatabase.insert(DbSchema.DbTable.NAME, null, values);
+    }
 
     // Menu
 
@@ -193,6 +226,7 @@ public class ListFragment extends Fragment {
             mNameTextView = itemView.findViewById(R.id.name);
         }
 
+        //This method is called when i click on a city to view Detail
         @Override
         public void onClick(View view) {
             AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
@@ -204,7 +238,10 @@ public class ListFragment extends Fragment {
 
             // Set up the buttons
             Intent intent = DetailActivity.newIntent(getActivity(), mLocation);
+
             startActivity(intent);
+          //  Toast.makeText(getContext(),"VIEW DETAIL",Toast.LENGTH_LONG).show();
+
         }
 
         public void bind(Location location) {

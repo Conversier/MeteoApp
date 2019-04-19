@@ -1,8 +1,11 @@
 package ch.supsi.dti.isin.meteoapp;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,8 +84,17 @@ public class HTTPRequest extends AsyncTask<Location, Void, String> {
             String jsonString = getUrlString(url);
             Log.i(TAG, "Received JSON: " + jsonString);
             JSONObject jsonBody = new JSONObject(jsonString);
-            locations[0].setWeather(parseItems(jsonBody));
-            System.out.println("LOCATION NOW: " + locations[0]);
+
+
+            int count=jsonBody.getInt("count");
+            if(count>0){
+                locations[0].setWeather(parseItems(jsonBody));
+                //System.out.println("LOCATION NOW: " + locations[0]);
+            }else{
+                locations[0].setWeather(null);
+                //System.out.println("City doesn't exists");
+            }
+
         } catch (IOException ioe) {
             Log.e(TAG, "Failed to fetch items", ioe);
         } catch (JSONException je) {

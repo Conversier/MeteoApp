@@ -1,6 +1,8 @@
 package ch.supsi.dti.isin.meteoapp.model;
 
-public class Weather {
+import java.io.Serializable;
+
+public class Weather implements Serializable {
 
     private String name;
 

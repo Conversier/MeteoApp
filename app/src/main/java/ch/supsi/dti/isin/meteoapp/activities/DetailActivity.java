@@ -3,6 +3,7 @@ package ch.supsi.dti.isin.meteoapp.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 import java.util.UUID;
 
@@ -15,15 +16,19 @@ public class DetailActivity extends SingleFragmentActivity implements OnTaskComp
 
     public static Intent newIntent(Context packageContext, Location mLocation) {
         Intent intent = new Intent(packageContext, DetailActivity.class);
-        intent.putExtra("Location", mLocation.getName());
+        //intent.putExtra("Location", mLocation.getName());
+        intent.putExtra("Location",mLocation);
         return intent;
     }
 
     @Override
     protected Fragment createFragment() {
-        UUID locationId = (UUID) getIntent().getSerializableExtra(EXTRA_LOCATION_ID);
-        String locationname=getIntent().getStringExtra("Location");
-        return new DetailLocationFragment().newInstance(locationname);
+        System.out.println("Im here");
+        //UUID locationId = (UUID) getIntent().getSerializableExtra(EXTRA_LOCATION_ID);
+        //String locationname=getIntent().getStringExtra("Location");
+        Location mLocation = (Location) getIntent().getExtras().getSerializable("Location");
+        return new DetailLocationFragment().newInstance(mLocation);
+
     }
 
     @Override

@@ -22,10 +22,10 @@ public class DetailLocationFragment extends Fragment{
     private TextView mIdTextView;
 
 
-    public static DetailLocationFragment newInstance(String location_name) {
+    public static DetailLocationFragment newInstance(Location location) {
         Bundle args = new Bundle();
-        args.putCharSequence(ARG_LOCATION_NAME,location_name);
-        //args.putSerializable(ARG_LOCATION_NAME, location_name);
+        //args.putCharSequence(ARG_LOCATION_NAME,location_name);
+        args.putSerializable("Location", location);
         DetailLocationFragment fragment = new DetailLocationFragment();
         fragment.setArguments(args);
        // fragment.setArguments(args);
@@ -36,10 +36,11 @@ public class DetailLocationFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //String locationName = getArguments().getSerializable(ARG_LOCATION_NAME).toString();
-        String locationName = getArguments().getCharSequence(ARG_LOCATION_NAME).toString();
-        System.out.println("BETA: "+locationName);
-        mLocation=new Location();
-        mLocation.setName(locationName);
+        //String locationName = getArguments().getCharSequence(ARG_LOCATION_NAME).toString();
+        mLocation=(Location)getArguments().getSerializable("Location");
+        System.out.println("BETA: "+mLocation.getName());
+        //mLocation=new Location();
+        //mLocation.setName(locationName);
         //Location = LocationsHolder.get(getActivity()).getLocation(locationId);
     }
 
@@ -50,14 +51,7 @@ public class DetailLocationFragment extends Fragment{
 
 
         //mLocation.setName("London,uk");
-        HTTPRequest t = new HTTPRequest();
-        try {
-            t.execute(mLocation).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         serWeatherInformations(v);
         setBackgroundWeather(v,imageView);
         return v;

@@ -35,7 +35,10 @@ public class LocationsHolder {
     }
     private LocationsHolder(Context context, SQLiteDatabase database) {
         mLocations = new ArrayList<>();
-
+        Location location=new Location();
+        //T
+        location.setName("GPS");
+        mLocations.add(location);
         //LETTURA DA DB PER CARICARE LA LISTA DI LOCATIONS
         CursorWrapper cursorWrapper = queryData(null, null, database);
 

@@ -14,11 +14,41 @@ import ch.supsi.dti.isin.meteoapp.db.DbSchema;
 public class Location implements Serializable {
     private UUID Id;
     private String mName;
+    private double lat;
+    private double lon;
     private Weather weather;
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Location location=new Location();
+        location.setId(this.getId());
+        location.setName(this.getName());
+        location.setLat(this.getLat());
+        location.setLon(this.getLon());
+        location.setWeather((Weather)this.getWeather().clone());
+        return location;
+    }
 
     public Location(UUID id, String mName) {
         this.Id = id;
         this.mName = mName;
+        lat=0.0;
+        lon=0.0;
     }
 
     public UUID getId() {
@@ -39,6 +69,8 @@ public class Location implements Serializable {
 
     public Location() {
         Id = UUID.randomUUID();
+        lat=0.0;
+        lon=0.0;
     }
 
 

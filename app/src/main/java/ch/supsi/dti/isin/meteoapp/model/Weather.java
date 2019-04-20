@@ -4,7 +4,18 @@ import java.io.Serializable;
 
 public class Weather implements Serializable {
 
+    private  String cityName;
+
     private String name;
+
+    public Weather(String name,String description, Double temperature, Double maxTemperature, Double minTemperature, String cityName) {
+        this.name = name;
+        this.description = description;
+        this.temperature = temperature;
+        this.maxTemperature = maxTemperature;
+        this.minTemperature = minTemperature;
+        this.cityName=cityName;
+    }
 
     public String getDescription() {
         return description;
@@ -38,9 +49,11 @@ public class Weather implements Serializable {
 
     public Weather(String name, Double temperature, Double maxTemperature, Double minTemperature) {
         this.name = name;
+        this.description="";
         this.temperature = temperature;
         this.maxTemperature = maxTemperature;
         this.minTemperature = minTemperature;
+        cityName=null;
     }
 
     public Weather(String name,String description, Double temperature, Double maxTemperature, Double minTemperature) {
@@ -68,6 +81,15 @@ public class Weather implements Serializable {
     }
 
     @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return  new Weather(this.name,
+                this.description,
+                this.temperature,
+                this.maxTemperature,
+                this.minTemperature);
+    }
+
+    @Override
     public String toString() {
         return "Weather{" +
                 "name='" + name + '\'' +
@@ -75,5 +97,13 @@ public class Weather implements Serializable {
                 ", maxTemperature=" + maxTemperature +
                 ", minTemperature=" + minTemperature +
                 '}';
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 }

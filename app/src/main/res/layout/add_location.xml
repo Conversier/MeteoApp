@@ -39,6 +39,7 @@
         android:cursorVisible="true"
         android:onClick="addcityClick"
         android:text="AGGIUNGI"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification.Emphasis"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_cityname" />
 </android.support.constraint.ConstraintLayout>

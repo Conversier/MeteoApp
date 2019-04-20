@@ -5,12 +5,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -32,9 +31,9 @@ import android.widget.Toast;
 import java.util.List;
 
 import ch.supsi.dti.isin.meteoapp.HTTPRequest;
-import ch.supsi.dti.isin.meteoapp.NotificationService;
 import ch.supsi.dti.isin.meteoapp.R;
 import ch.supsi.dti.isin.meteoapp.activities.DetailActivity;
+import ch.supsi.dti.isin.meteoapp.activities.MainActivity;
 import ch.supsi.dti.isin.meteoapp.db.DbHelper;
 import ch.supsi.dti.isin.meteoapp.db.DbSchema;
 import ch.supsi.dti.isin.meteoapp.model.LocationsHolder;
@@ -51,9 +50,10 @@ public class ListFragment extends Fragment {
     private LocationAdapter mAdapter;
     private SQLiteDatabase mDatabase;
 
+
     public void clearDatabase(SQLiteDatabase db, String TABLE_NAME) {
-        String clearDBQuery = "DELETE FROM " + TABLE_NAME;
-        db.execSQL(clearDBQuery);
+        int count=db.delete(TABLE_NAME,"1",null);
+        Toast.makeText(getContext(),"Deleted  "+count+" items, Restart app to apply changes!",Toast.LENGTH_LONG).show();
     }
 
     //Method called by the constructor of MainActivity
@@ -62,39 +62,31 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Context context = getActivity();
         mDatabase = new DbHelper(context).getWritableDatabase();
-        mDatabase = new DbHelper(context).getWritableDatabase();
-        Cursor c = mDatabase.rawQuery("SELECT * FROM " + DbSchema.DbTable.NAME + " WHERE 0", null);
-        try {
-            String[] columnNames = c.getColumnNames();
-            System.out.println("OK");
-        } finally {
-            c.close();
-        }
-        //clearDatabase(mDatabase,"MeteoApp");
         setHasOptionsMenu(true);
 
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         startGpsListener();
-        //NotificationService.setServiceAlarm(getContext(),LocationsHolder.get(getActivity()).getLocations().get(0).getWeather(),true);
-
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         mLocationRecyclerView = view.findViewById(R.id.recycler_view);
         mLocationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        refreshLocationsList();
+        return view;
+    }
+
+    private void refreshLocationsList() {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
                 getContext(),
                 LinearLayoutManager.VERTICAL
         );
         //leggere da database passando il db come argomento al metodo get() di locationHolder
         List<Location> locations = LocationsHolder.get(getActivity(), mDatabase).getLocations();
-
-
         mLocationRecyclerView.addItemDecoration(dividerItemDecoration);
         mAdapter = new LocationAdapter(locations);
         mLocationRecyclerView.setAdapter(mAdapter);
-        return view;
     }
 
     //This function allows me to manage the input inserted in the dialog, to add a new location
@@ -177,6 +169,7 @@ public class ListFragment extends Fragment {
                         Location gpsLoc = LocationsHolder.get(getContext()).getLocations().get(0);
                         gpsLoc.setLat(location.getLatitude());
                         gpsLoc.setLon(location.getLongitude());
+
                         System.out.println("MYLOC" + location.getLatitude() + "," + location.getLongitude());
 
                     }
@@ -204,6 +197,7 @@ public class ListFragment extends Fragment {
     }
 
     private void insertData(Location location) {
+        System.out.println(mDatabase.isOpen());
         ContentValues values = Location.getContentValues(location);
         mDatabase.insert(DbSchema.DbTable.NAME, null, values);
     }
@@ -219,14 +213,35 @@ public class ListFragment extends Fragment {
     //This is called when i click on the plus button on the top in the main view
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        FragmentManager fm = getFragmentManager();
-        InsertLocationFragment il = new InsertLocationFragment();
-        il.setTargetFragment(this, 0);
-        //il.setTargetFragment(this,0);
-        il.show(fm, null);
+        switch (item.getItemId()){
+            case R.id.menu_add:
+                List<Location> locations = LocationsHolder.get(getActivity(), mDatabase).getLocations();
+                System.out.println("Dimensione: "+locations.size());
+                FragmentManager fm = getFragmentManager();
+                InsertLocationFragment il = new InsertLocationFragment();
+                il.setTargetFragment(this, 0);
+                //il.setTargetFragment(this,0);
+                il.show(fm, null);
 
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
-        mBuilder.show();
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
+                mBuilder.show();
+                break;
+            case R.id.menu_cleardb:
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Clear list")
+                        .setMessage("Do you really want to reset the list?")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                Toast.makeText(getContext(), "Yaay", Toast.LENGTH_SHORT).show();
+                                clearDatabase(mDatabase, DbSchema.DbTable.NAME);
+                                refreshLocationsList();
+
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+                break;
+        }
+
 
         return super.onOptionsItemSelected(item);
 

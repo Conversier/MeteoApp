@@ -32,6 +32,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import ch.supsi.dti.isin.meteoapp.HTTPRequest;
+import ch.supsi.dti.isin.meteoapp.NotificationService;
 import ch.supsi.dti.isin.meteoapp.R;
 import ch.supsi.dti.isin.meteoapp.activities.DetailActivity;
 import ch.supsi.dti.isin.meteoapp.db.DbHelper;
@@ -77,6 +78,8 @@ public class ListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         startGpsListener();
+        //NotificationService.setServiceAlarm(getContext(),LocationsHolder.get(getActivity()).getLocations().get(0).getWeather(),true);
+
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         mLocationRecyclerView = view.findViewById(R.id.recycler_view);
         mLocationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -160,6 +163,7 @@ public class ListFragment extends Fragment {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQ_CODE);
             Toast.makeText(getContext(), "Per confermare la modifica, riavvia l'app", Toast.LENGTH_LONG).show();
         } else
+
             System.out.println("ho i permessi");
         LocationParams.Builder builder = new LocationParams.Builder()
                 .setAccuracy(LocationAccuracy.HIGH)

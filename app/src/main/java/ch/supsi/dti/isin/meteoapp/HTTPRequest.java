@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 
 import ch.supsi.dti.isin.meteoapp.model.Location;
 import ch.supsi.dti.isin.meteoapp.model.Weather;
+import ch.supsi.dti.isin.meteoapp.services.TestService;
 
 
 public class HTTPRequest extends AsyncTask<Location, Void, String> {

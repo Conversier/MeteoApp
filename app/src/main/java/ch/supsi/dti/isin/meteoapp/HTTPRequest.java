@@ -4,9 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
@@ -19,13 +17,14 @@ import java.util.concurrent.ExecutionException;
 
 import ch.supsi.dti.isin.meteoapp.model.Location;
 import ch.supsi.dti.isin.meteoapp.model.Weather;
-import ch.supsi.dti.isin.meteoapp.services.TestService;
+import ch.supsi.dti.isin.meteoapp.services.NotificationService;
 
 
 public class HTTPRequest extends AsyncTask<Location, Void, String> {
 
     public static final String TAG = "Test";
     private static final String API_KEY = "4808e5b3883c21c5462931bdece6fd6e";
+
 
     public static void doRequest(Location mLocation) {
         HTTPRequest t = new HTTPRequest();
@@ -103,6 +102,9 @@ public class HTTPRequest extends AsyncTask<Location, Void, String> {
                         .appendQueryParameter("units", "metric")
                         .appendQueryParameter("appid", API_KEY)
                         .build().toString();
+
+
+
             }else{
                  url = Uri.parse("https://api.openweathermap.org/data/2.5/find")
                         .buildUpon()
@@ -120,10 +122,8 @@ public class HTTPRequest extends AsyncTask<Location, Void, String> {
             int count=jsonBody.getInt("count");
             if(count>0){
                 locations[0].setWeather(parseItems(jsonBody));
-                //System.out.println("LOCATION NOW: " + locations[0]);
             }else{
                 locations[0].setWeather(null);
-                //System.out.println("City doesn't exists");
             }
 
         } catch (IOException ioe) {

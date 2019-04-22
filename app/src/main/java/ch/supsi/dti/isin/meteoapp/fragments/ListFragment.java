@@ -1,5 +1,4 @@
 package ch.supsi.dti.isin.meteoapp.fragments;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -27,19 +25,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.List;
-
 import ch.supsi.dti.isin.meteoapp.HTTPRequest;
-import ch.supsi.dti.isin.meteoapp.NotificationService;
 import ch.supsi.dti.isin.meteoapp.R;
 import ch.supsi.dti.isin.meteoapp.activities.DetailActivity;
-import ch.supsi.dti.isin.meteoapp.activities.MainActivity;
 import ch.supsi.dti.isin.meteoapp.db.DbHelper;
 import ch.supsi.dti.isin.meteoapp.db.DbSchema;
 import ch.supsi.dti.isin.meteoapp.model.LocationsHolder;
 import ch.supsi.dti.isin.meteoapp.model.Location;
-import ch.supsi.dti.isin.meteoapp.services.TestService;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
@@ -98,7 +91,6 @@ public class ListFragment extends Fragment {
             return;
         if (requestCode == 0) {
             Location locationReceived = (Location) data.getSerializableExtra("Location");
-            //String valore=(String)data.getSerializableExtra("tag");
             System.out.println("Valore ricevuto: " + locationReceived.getName());
             addLocation(locationReceived, 123);
             insertData(locationReceived);
@@ -171,9 +163,7 @@ public class ListFragment extends Fragment {
                         Location gpsLoc = LocationsHolder.get(getContext()).getLocations().get(0);
                         gpsLoc.setLat(location.getLatitude());
                         gpsLoc.setLon(location.getLongitude());
-
                         System.out.println("MYLOC" + location.getLatitude() + "," + location.getLongitude());
-
                     }
                 });
     }
@@ -222,7 +212,6 @@ public class ListFragment extends Fragment {
                 FragmentManager fm = getFragmentManager();
                 InsertLocationFragment il = new InsertLocationFragment();
                 il.setTargetFragment(this, 0);
-                //il.setTargetFragment(this,0);
                 il.show(fm, null);
 
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
@@ -235,10 +224,9 @@ public class ListFragment extends Fragment {
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Toast.makeText(getContext(), "Yaay", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "List empty", Toast.LENGTH_SHORT).show();
                                 clearDatabase(mDatabase, DbSchema.DbTable.NAME);
                                 refreshLocationsList();
-
                             }})
                         .setNegativeButton(android.R.string.no, null).show();
                 break;
@@ -246,7 +234,6 @@ public class ListFragment extends Fragment {
 
 
         return super.onOptionsItemSelected(item);
-
     }
 
     // Holder
@@ -268,8 +255,6 @@ public class ListFragment extends Fragment {
             HTTPRequest.doRequest(mLocation); //
             if (mLocation.getWeather() != null) {
                 Intent intent = DetailActivity.newIntent(getActivity(), mLocation);
-                if(mLocation.getId().toString().equals(LocationsHolder.get(getActivity()).getLocations().get(0).getId().toString()))
-                   NotificationService.setServiceAlarm(getContext(),mLocation.getWeather(),true);
                 startActivity(intent);
             }
         }
